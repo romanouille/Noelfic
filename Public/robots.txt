@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /fic/random
+Disallow: /recherche?*
+Disallow: /compte/*
+Disallow: /api/*
+Disallow: /changelog
