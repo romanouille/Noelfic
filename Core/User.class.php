@@ -14,9 +14,11 @@ class User {
 	 * int $lastSeenTimestamp Timestamp de la date de dernier passage de l'utilisateur
 	 * string $validationHash Hash de validation à utiliser pour valider le compte
 	 * bool $validated Indique si le compte a été validé
+	 * int $rank Rang de l'utilisateur
+	 * string $rememberHash Hash de réinitialisation du mot de passe du compte
 	 */
 	 
-	public $id, $exists = false, $username, $passwordv1, $password, $email, $avatarId = 0, $description, $birth = 0, $registrationTimestamp = 0, $lastSeenTimestamp = 0, $validationHash, $validated = false, $rank = 0;
+	public $id, $exists = false, $username, $passwordv1, $password, $email, $avatarId = 0, $description, $birth = 0, $registrationTimestamp = 0, $lastSeenTimestamp = 0, $validationHash, $validated = false, $rank = 0, $rememberHash;
 	
 	/**
 	 * Constructeur
@@ -40,7 +42,7 @@ class User {
 		
 		$this->exists = true;
 		
-		$query = $db->prepare("SELECT username, password_v1, password, email, avatar_id, description, birth, registration_timestamp, last_seen_timestamp, validation_hash, validated, rank FROM users WHERE id = :id");
+		$query = $db->prepare("SELECT username, password_v1, password, email, avatar_id, description, birth, registration_timestamp, last_seen_timestamp, validation_hash, validated, rank, remember_hash FROM users WHERE id = :id");
 		$query->bindValue(":id", $this->id, PDO::PARAM_INT);
 		$query->execute();
 		$data = array_map("trim", $query->fetch());
@@ -57,6 +59,7 @@ class User {
 		$this->validationHash = (string)$data["validation_hash"];
 		$this->validated = (bool)$data["validated"];
 		$this->rank = (int)$data["rank"];
+		$this->rememberHash = (string)$data["remember_hash"];
 	}
 	
 	/**
@@ -88,6 +91,13 @@ class User {
 		return (int)$data["id"];
 	}
 	
+	/**
+	 * Vérifie si un mot de passe correspond à celui de l'utilisateur
+	 *
+	 * @param string $password Mot de passe à vérifier
+	 *
+	 * @return bool Résultat
+	 */
 	public function checkPassword(string $password) : bool {
 		global $db;
 		
@@ -107,6 +117,13 @@ class User {
 		return password_verify($password, $this->password);
 	}
 	
+	/**
+	 * Récupère l'ID d'un utilisateur en fonction de son adresse e-mail
+	 *
+	 * @param string $email Adresse e-mail
+	 *
+	 * @return int ID de l'utilisateur
+	 */
 	public static function emailToId(string $email) : int {
 		global $db;
 		
@@ -120,6 +137,13 @@ class User {
 		return isset($data["id"]) ? (int)$data["id"] : 0;
 	}
 	
+	/**
+	 * Récupère le timestamp du dernier message posté sur un salon du chat par l'utilisateur
+	 *
+	 * @param int $room Salon
+	 *
+	 * @return int Résultat
+	 */
 	public function getLastMessageTimestampOnChat(int $room) : int {
 		global $db;
 		
@@ -132,6 +156,11 @@ class User {
 		return isset($data["created_timestamp"]) ? (int)$data["created_timestamp"] : 0;
 	}
 	
+	/**
+	 * Récupère les chapitres publiés par l'utilisateur
+	 *
+	 * @return array Chapitres
+	 */
 	public function getChaptersList() : array {
 		global $db;
 		
@@ -153,6 +182,13 @@ class User {
 		return $result;
 	}
 	
+	/**
+	 * Met à jour le pseudo de l'utilisateur
+	 *
+	 * @param string $username Nouveau pseudo
+	 *
+	 * @return bool Résultat
+	 */
 	public function updateUsername(string $username) : bool {
 		global $db;
 		
@@ -162,12 +198,85 @@ class User {
 		return $query->execute();
 	}
 	
+	/**
+	 * Met à jour le timestamp de dernière visite de l'utilisateur
+	 *
+	 * @return bool Résultat
+	 */
 	public function updateLastSeenTimestamp() : bool {
 		global $db;
 		
 		$query = $db->prepare("UPDATE users SET last_seen_timestamp = :timestamp WHERE id = :id");
 		$query->bindValue(":timestamp", time(), PDO::PARAM_INT);
 		$query->bindValue(":id", $this->id, PDO::PARAM_INT);
+		return $query->execute();
+	}
+	
+	public static function create(string $username, string $password, string $email) : int {
+		global $db;
+		
+		$query = $db->prepare("INSERT INTO users(username, password, email, registration_timestamp, last_seen_timestamp) VALUES(:username, :password, :email, :registration_timestamp, :last_seen_timestamp)");
+		$query->bindValue(":username", $username, PDO::PARAM_STR);
+		$query->bindValue(":password", password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
+		$query->bindValue(":email", $email, PDO::PARAM_STR);
+		$query->bindValue(":registration_timestamp", time(), PDO::PARAM_INT);
+		$query->bindValue(":last_seen_timestamp", time(), PDO::PARAM_INT);
+		$query->execute();
+		
+		return $db->lastInsertId();
+	}
+	
+	public function generateValidationHash() : string {
+		global $db;
+		
+		$random = randomHash();
+		
+		$query = $db->prepare("UPDATE users SET validation_hash = :validation_hash WHERE id = :id");
+		$query->bindValue(":validation_hash", $random, PDO::PARAM_STR);
+		$query->bindValue(":id", $this->id, PDO::PARAM_INT);
+		$query->execute();
+		
+		return $random;
+	}
+	
+	public function validate() : bool {
+		global $db;
+		
+		$query = $db->prepare("UPDATE users SET validation_hash = '', validated = 1 WHERE id = :id");
+		$query->bindValue(":id", $this->id, PDO::PARAM_INT);
+		
+		return $query->execute();
+	}
+	
+	public function generateRememberHash() : string {
+		global $db;
+		
+		$randomHash = randomHash();
+		
+		$query = $db->prepare("UPDATE users SET remember_hash = :remember_hash WHERE id = :id");
+		$query->bindValue(":remember_hash", $randomHash, PDO::PARAM_STR);
+		$query->bindValue(":id", $this->id, PDO::PARAM_INT);
+		$query->execute();
+		
+		return $randomHash;
+	}
+	
+	public function clearRememberHash() : bool {
+		global $db;
+		
+		$query = $db->prepare("UPDATE users SET remember_hash = '' WHERE id = :id");
+		$query->bindValue(":id", $this->id, PDO::PARAM_INT);
+		
+		return $query->execute();
+	}
+	
+	public function changePassword(string $password) : bool {
+		global $db;
+		
+		$query = $db->prepare("UPDATE users SET password = :password WHERE id = :id");
+		$query->bindValue(":password", password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
+		$query->bindValue(":id", $this->id, PDO::PARAM_INT);
+		
 		return $query->execute();
 	}
 }

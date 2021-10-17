@@ -1,13 +1,8 @@
 <?php
-http_response_code(503);
 require "Core/Captcha.class.php";
 require "Core/Mail.class.php";
 
 $created = false;
-
-
-$created = true;
-$messages[] = "Le formulaire d'inscription revient ce week-end.";
 
 if (count($_POST) > 0) {
 	$messages = [];
@@ -76,16 +71,9 @@ if (count($_POST) > 0) {
 	}
 	
 	if (empty($messages)) {
-		$validationHash = randomHash();
-		
-		$user = new User;
-		$user->username = (string)$_POST["username"];
-		$user->password = $user->makePassword($_POST["password"]);
-		$user->email = (string)$_POST["email"];
-		$user->registrationTimestamp = time();
-		$user->lastSeenTimestamp = time();
-		$user->validationHash = $validationHash;
-		$user->save();
+		$userId = User::create($_POST["username"], $_POST["password"], $_POST["email"]);
+		$user = new User($userId);
+		$validationHash = $user->generateValidationHash();
 		
 		$created = true;
 		
@@ -104,8 +92,5 @@ if ($userLogged) {
 	http_response_code(403);
 	require "Handlers/Error.php";
 }
-
-//Mail::send("admin@n-mail.fr", "Validation de votre pseudo", "Bonjour,\n\nafin de valider votre pseudo sur Noelfic.fr, veuillez vous rendre sur le lien suivant : <lien>\n\nA bientôt sur Noelfic.fr. :)");
-
 
 require "Pages/Register.php";

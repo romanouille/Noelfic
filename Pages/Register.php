@@ -6,7 +6,7 @@ require "Pages/Layout/Start.php";
 <?php
 if (isset($messages)) {
 ?>
-<div class="card blue">
+<div class="card green">
 	<div class="card-content white-text">
 		<p><?php foreach ($messages as $message) { echo "$message<br>"; } ?></p>
 	</div>

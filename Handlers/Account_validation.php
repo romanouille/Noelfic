@@ -12,9 +12,7 @@ if (!$user->exists) {
 } elseif ($user->validationHash != $validationHash) {
 	$message = "Le lien de validation est incorrect. En cas de problème, veuillez contacter un administrateur.";
 } else {
-	$user->validated = true;
-	$user->validationHash = "";
-	$user->save();
+	$user->validate();
 	$message = "Votre compte a été validé, vous pouvez maintenant vous connecter.";
 }
 

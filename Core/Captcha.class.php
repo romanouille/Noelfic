@@ -1,11 +1,21 @@
 <?php
 class Captcha {
+	/**
+	 * Génère un captcha
+	 *
+	 * @param bool $center Aligne le captcha au centre
+	 */
 	public static function generate(bool $center = false) {
 		global $config;
 		
 		echo "<div class=\"g-recaptcha".($center ? " captcha-center" : "")."\" data-sitekey=\"{$config["recaptcha"]["public_key"]}\"></div>\n";
 	}
-
+	
+	/**
+	 * Vérifie si le captcha envoyé est valide
+	 *
+	 * @return bool Résultat
+	 */
 	public static function check() : bool {
 		global $config;
 		

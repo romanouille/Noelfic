@@ -56,6 +56,9 @@ if ($handlerName == "Home.php") {
 } elseif ($handlerName == "Changelog.php") {
 	$pageTitle = "Changelog";
 	$pageDescription = "Liste des modifications apportées à Noelfic";
+} elseif ($handlerName == "Account_password_reset.php" || $handlerName == "Account_password_reset_form.php") {
+	$pageTitle = "Réinitialiser mon mot de passe";
+	$pageDescription = "Formulaire de réinitialisation de mot de passe de compte Noelfic";
 }
 
 
@@ -145,6 +148,10 @@ main {
 .captcha-center {
 	margin:0 auto;
 	width:304px;
+}
+
+input::placeholder {
+	color:#737C93
 }
 		</style>
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>

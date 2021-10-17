@@ -1,13 +1,25 @@
 <?php
 class Session {
+	/**
+	 * string $name Nom de la session
+	 * int $userId ID de l'utilisateur
+	 */
 	public $name, $userId = 0;
 	
+	/**
+	 * Constructeur
+	 *
+	 * @param string $name Nom de la session
+	 */
 	public function __construct(string $name) {
 		$this->name = $name;
 		
 		$this->load();
 	}
-
+	
+	/**
+	 * Charge les données de la session
+	 */
 	private function load() {
 		global $db;
 
@@ -25,7 +37,12 @@ class Session {
 			$this->userId = $data["user_id"];
 		}
 	}
-
+	
+	/**
+	 * Met à jour la session
+	 *
+	 * @return bool Résultat
+	 */
 	public function update() : bool {
 		global $db;
 
@@ -74,7 +91,14 @@ class Session {
 			return $query->execute();
 		}
 	}
-
+	
+	/**
+	 * Crée une session
+	 *
+	 * @param int $userId ID de l'utilisateur
+	 *
+	 * @return string Nom de la session créée
+	 */
 	public static function create(int $userId) : string {
 		global $db;
 

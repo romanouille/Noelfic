@@ -3,6 +3,7 @@ class Chapter {
 	/**
 	 * int $id ID du chapitre
 	 * int $author ID de l'auteur du chapitre
+	 * string $title Titre du chapitre
 	 * int $createdTimestamp Timestamp de la date de création du chapitre
 	 * string $content Contenu du chapitre
 	 */

@@ -13,7 +13,7 @@ require "Pages/Layout/Start.php";
 
 		<form method="post">
 			<div class="input-field">
-				<input type="text" name="username" placeholder="Nom d'utilisateur" maxlength="15" value="<?=isset($_POST["username"]) && is_string($_POST["username"]) ? htmlspecialchars($_POST["username"]) : ""?>" required>
+				<input type="text" name="username" placeholder="Pseudo" maxlength="15" value="<?=isset($_POST["username"]) && is_string($_POST["username"]) ? htmlspecialchars($_POST["username"]) : ""?>" required>
 				<input type="password" name="password" placeholder="Mot de passe" maxlength="72" value="<?=isset($_POST["password"]) && is_string($_POST["password"]) ? htmlspecialchars($_POST["password"]) : ""?>" required>
 			</div>
 
@@ -24,6 +24,12 @@ require "Pages/Layout/Start.php";
 				
 				<p>
 					<button class="waves-effect waves-light btn green">Valider</button>
+				</p>
+				
+				<br>
+				
+				<p>
+					<a href="/compte/mdp/reinitialiser" title="Réinitialiser mon mot de passe" class="waves-effect waves-light btn">Mot de passe perdu</a>
 				</p>
 			</div>
 		</form>

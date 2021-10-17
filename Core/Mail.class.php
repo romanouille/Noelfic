@@ -20,12 +20,12 @@ class Mail {
 		];
 		
 		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, "https://api.mailgun.net/v3/{$config["mailgun"]["domain"]}/messages");
+		curl_setopt($curl, CURLOPT_URL, "https://api.eu.mailgun.net/v3/{$config["mailgun"]["domain"]}/messages");
 		curl_setopt($curl, CURLOPT_USERAGENT, "Noelfic Mail Sender");
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($curl, CURLOPT_USERPWD, "api:{$config["mailgun"]["private_key"]}");
 		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		curl_setopt($curl, CURLOPT_USERPWD, "api:{$config["mailgun"]["private_key"]}");
 		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post));
 		curl_setopt($curl, CURLOPT_HEADER, true);

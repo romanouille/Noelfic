@@ -16,6 +16,9 @@ class Chat {
 		$this->load();
 	}
 	
+	/**
+	 * Charge les données du salon
+	 */
 	private function load() {
 		global $db;
 		
@@ -63,6 +66,14 @@ class Chat {
 		return array_reverse($result);
 	}
 	
+	/**
+	 * Ajoute un message au salon
+	 *
+	 * @param int $userId ID de l'utilisateur
+	 * @param string $content Contenu du message
+	 *
+	 * @return int ID du message créé
+	 */
 	public function addMessage(int $userId, string $content) : int {
 		global $db;
 		

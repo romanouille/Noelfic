@@ -16,5 +16,7 @@ $routes = [
 	"#^\/compte\/inscription$#" => "Register.php",
 	"#^\/compte\/connexion$#" => "Login.php",
 	"#^\/compte\/valider\/([0-9]+)-([a-f0-9]+)$#" => "Account_validation.php",
+	"#^\/compte\/mdp\/reinitialiser\/([0-9]+)-([a-f0-9]+)$#" => "Account_password_reset_form.php",
+	"#^\/compte\/mdp/reinitialiser$#" => "Account_password_reset.php",
 	"#^\/contact$#" => "Contact.php"
 ];

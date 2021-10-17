@@ -166,6 +166,13 @@ function errorHandler($errno, $errstr, $errfile, $errline) {
 	return true;
 }
 
+/**
+ * Remplace les URL par des liens cliquables, code tiré de Stackoverflow
+ *
+ * @param string $text Texte source
+ *
+ * @return string Résultat
+ */
 function replace_links( $text ) {    
 	$text = preg_replace('#(script|about|applet|activex|chrome):#is', "\\1:", $text);
 
@@ -184,12 +191,26 @@ function replace_links( $text ) {
 	return $ret;
 }
 
+/**
+ * Récupère les données MX d'un domaine
+ *
+ * @param string $domain Domaine
+ *
+ * @return array Résultat
+ */
 function getDomainMx(string $domain) : array {
 	getmxrr($domain, $result);
 	
 	return $result;
 }
 
+/**
+ * Vérifie si un mot de passe est sécurisé grâce à l'API pwnedpasswords.com
+ *
+ * @param string $password Mot de passe à vérifier
+ *
+ * @return bool Résultat
+ */
 function isPasswordSecure(string $password) : bool {
 	$hash = strtoupper(sha1($password));
 	
@@ -207,6 +228,11 @@ function isPasswordSecure(string $password) : bool {
 	return !strstr($page, substr($hash, 5));
 }
 
+/**
+ * Génère un hash aléatoire
+ *
+ * @return string Résultat
+ */
 function randomHash() {
 	return md5(random_bytes(50).random_int(100000000, 999999999).microtime(1));
 }
